@@ -125,7 +125,7 @@ const Mq2 = ({
             answer2 = "" + MQPostfixSolver(parseAns.substring(0), step.values);
           } else {
             answer1 = "" + MQPostfixSolver(parseInput.substring(0), [{}]);
-            answer2 = "" + MQPostfixSolver(parseAns.substring(0), step.values);
+            answer2 = "" + MQPostfixSolver(parseAns.substring(0), [{}]);
           }
           let relativeError = Math.abs(1 - parseFloat(answer1) / parseFloat(answer2));
           if (relativeError < 0.005) correctAns = true;
@@ -149,7 +149,7 @@ const Mq2 = ({
             answer2 = "" + MQPostfixSolver(parseAns.substring(0), step.values);
           } else {
             answer1 = "" + MQPostfixSolver(parseInput.substring(0), [{}]);
-            answer2 = "" + MQPostfixSolver(parseAns.substring(0), step.values);
+            answer2 = "" + MQPostfixSolver(parseAns.substring(0), [{}]);
           }
           let relativeError = Math.abs(1 - parseFloat(answer1) / parseFloat(answer2));
           if (relativeError < 0.005 && MQPostfixstrict(parseInput, parseAns)) correctAns = true;
@@ -175,6 +175,7 @@ const Mq2 = ({
       result.current = true;
       MQProxy.endDate = Date.now();
       MQProxy.defaultIndex = [parseInt(step.stepId) + 1];
+      console.log(MQProxy.defaultIndex[0]);
       MQProxy.submitValues = {
         ans: latex,
         att: attempts,

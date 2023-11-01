@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect, useRef } from "react";
+import React, { useState, memo, useEffect, useRef,useCallback} from "react";
 
 import {
   Flex,
@@ -68,13 +68,13 @@ const Steporans = ({
   useEffect(() => {
     if (answer && answer != "") {
       setCC(
-        <>
+        <Box margin={"auto"}>
           <MQStaticMathField key={"respuesta" + i} exp={answer} currentExpIndex={true} />
           <Alert key={"Alert" + topicId + "i"} status={"success"} mt={2}>
             <AlertIcon key={"AlertIcon" + topicId + "i"} />
             {step.correctMsg}
           </Alert>
-        </>,
+        </Box>,
       );
     } else {
       setCC(
@@ -136,6 +136,7 @@ const Solver2 = ({ topicId, steps }: { topicId: string; steps: ExType }) => {
     MQProxy.startDate = Date.now();
     MQProxy.content = steps.code;
     MQProxy.topicId = topicId;
+    MQProxy.defaultIndex = [0]
     /*action({
       verbName: "loadContent",
       contentID: steps?.code,
@@ -199,6 +200,23 @@ const Solver2 = ({ topicId, steps }: { topicId: string; steps: ExType }) => {
     }
   }, [mqSnap.submit]);
 
+  const [accI,setAccI]=useState([0,-1,-1,-1,-1]);
+  const expandeditems = useRef(accI);
+  const [flag,setFlag]=useState(true)
+
+  useEffect(()=>{
+    for(let i=0;i<MQProxy.defaultIndex[0];i++){
+      expandeditems.current[i]=-1;
+    }
+    expandeditems.current[MQProxy.defaultIndex[0]]=MQProxy.defaultIndex[0];
+    flag?setFlag(false):setFlag(true);
+  },[MQProxy.defaultIndex[0]])
+  
+  useEffect(
+    ()=>{setAccI(expandeditems.current);}
+  ,[flag])
+
+
   return (
     <Flex alignItems="center" justifyContent="center" margin={"auto"}>
       <Flex
@@ -219,10 +237,8 @@ const Solver2 = ({ topicId, steps }: { topicId: string; steps: ExType }) => {
         </Heading>
         <MQStaticMathField exp={steps.steps[0]?.expression || ""} currentExpIndex={true} />
         <Accordion
-          onChange={algo => (MQProxy.defaultIndex = algo as Array<number>)}
-          index={MQProxy.defaultIndex}
-          allowToggle={true}
-          allowMultiple={true}
+          index={accI}
+          allowMultiple
         >
           {steps.steps.map((step, i) => (
             <AccordionItem
@@ -249,6 +265,7 @@ const Solver2 = ({ topicId, steps }: { topicId: string; steps: ExType }) => {
                             topicID: topicId,
                           });*/
                           potstate.open = true;
+                          expandeditems.current[i]=i;
                           potstates[parseInt(step.stepId)] = potstate;
                           setTest(potstates);
                         } else {
@@ -259,9 +276,11 @@ const Solver2 = ({ topicId, steps }: { topicId: string; steps: ExType }) => {
                             topicID: topicId,
                           });*/
                           potstate.open = false;
+                          expandeditems.current[i]=-1;
                           potstates[parseInt(step.stepId)] = potstate;
                           setTest(potstates);
                         }
+                        flag?setFlag(false):setFlag(true);
                       }
                     }}
                   >
@@ -272,7 +291,7 @@ const Solver2 = ({ topicId, steps }: { topicId: string; steps: ExType }) => {
                   </AccordionButton>
                 </Alert>
               </h2>
-              <AccordionPanel key={"AIAccordionPanel" + i} pb={4}>
+              <AccordionPanel key={"AIAccordionPanel" + i} pb={4} margin={"auto"}>
                 <Steporans
                   step={step}
                   topicId={topicId}
