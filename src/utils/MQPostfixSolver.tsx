@@ -60,7 +60,8 @@ const MQPostfixSolver = (MQPostfixExpression: string, ValuesObject: object[]) =>
         }
       }
     }
-    return stack[0];
+    let fullEval=(stack.length==1)?true:false
+    return {value:stack,finished:fullEval};
   };
 
   const solve = (input: string, values: typeof value[]) => {
